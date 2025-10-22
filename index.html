@@ -60,7 +60,7 @@
             pointer-events: none;
             z-index: 5;
             opacity: 0;
-            transition: opacity 3s ease-in;
+            transition: opacity 3s 1s ease-in;
         }
 
         /* --- স্টার্ট বাটন --- */
@@ -86,12 +86,12 @@
             position: relative;
             z-index: 8;
             width: 90%;
-            max-width: 800px;
+            max-width: 850px; /* একটু প্রশস্ত করা হলো */
             padding: 40px;
             background: transparent;
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 2s 1s ease-out, transform 2s 1s ease-out;
+            transition: opacity 2s 1.5s ease-out, transform 2s 1.5s ease-out;
             pointer-events: none;
         }
         #message-box.visible {
@@ -102,40 +102,46 @@
         
         #message-container p {
             font-family: var(--font-main);
-            font-size: 2.1rem;
+            font-size: 2.2rem;
             font-weight: 600;
             color: var(--text-color);
-            line-height: 2.5;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-            margin-bottom: 25px;
-            text-align: center; /* লেখা মাঝখানে আনার জন্য */
+            line-height: 2.6;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            margin-bottom: 30px;
+            text-align: center;
         }
         
         /* পেশাদার টেক্সট অ্যানিমেশন */
         .word {
             display: inline-block;
-            white-space: pre; /* ইমোজি ও অক্ষরের মধ্যে স্পেস ঠিক রাখার জন্য */
-        }
-        .char {
-            display: inline-block;
             opacity: 0;
-            transform: translateY(25px) scale(1.1) rotate(5deg);
-            filter: blur(5px);
-            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            transition-delay: var(--delay);
+            filter: blur(8px);
+            transform: translateY(20px);
+            animation: fadeInWord 1s forwards;
+            animation-delay: var(--delay);
+            white-space: pre;
+        }
+        @keyframes fadeInWord {
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform: translateY(0);
+            }
+        }
+        
+        #youtube-player {
+            position: absolute; top: -9999px; left: -9999px;
+            width: 0; height: 0;
         }
 
         @media (max-width: 600px) {
-            #start-button { font-size: 3rem; }
-            #message-container p { font-size: 1.6rem; line-height: 2; }
+            #start-button { font-size: 3.5rem; }
+            #message-container p { font-size: 1.6rem; line-height: 2.2; }
         }
     </style>
 </head>
 <body>
-    <!-- একটি সুন্দর এবং আবেগঘন শীতের মিউজিক -->
-    <audio id="background-song" loop>
-        <source src="https://www.chosic.com/wp-content/uploads/2022/01/forgotten-in-time.mp3" type="audio/mpeg">
-    </audio>
+    <div id="youtube-player"></div>
     
     <div id="page-wrapper">
         <div id="background-container"></div>
@@ -150,6 +156,8 @@
         </div>
     </div>
 
+    <!-- YouTube Iframe API Script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const getEl = (id) => document.getElementById(id);
@@ -159,19 +167,29 @@
             const bgContainer = getEl('background-container');
             const messageBox = getEl('message-box');
             const messageContainer = getEl('message-container');
-            const backgroundSong = getEl('background-song');
-            const canvas = getEl('snow-canvas');
-            const ctx = canvas.getContext('2d');
+            const snowCanvas = getEl('snow-canvas');
+            const ctx = snowCanvas.getContext('2d');
             
+            let youtubePlayer;
+            const videoId = '4ofdcfPvzC8'; // আপনার দেওয়া গানের ভিডিও আইডি
+
+            window.onYouTubeIframeAPIReady = function() {
+                youtubePlayer = new YT.Player('youtube-player', {
+                    videoId: videoId,
+                    playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': videoId },
+                    events: { 'onReady': (event) => event.target.setVolume(60) }
+                });
+            }
+
             // অনেক বেশি ঘন তুষার পড়ার অ্যানিমেশন
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            snowCanvas.width = window.innerWidth;
+            snowCanvas.height = window.innerHeight;
             let particles = [];
             const particleCount = Math.min(400, window.innerWidth / 2.5);
             for (let i = 0; i < particleCount; i++) {
                 particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
+                    x: Math.random() * snowCanvas.width,
+                    y: Math.random() * snowCanvas.height,
                     radius: Math.random() * 3.5 + 1,
                     speed: Math.random() * 1.2 + 0.6,
                     opacity: Math.random() * 0.7 + 0.3,
@@ -179,7 +197,7 @@
                 });
             }
             function drawSnow() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
                 for (let p of particles) {
                     ctx.beginPath();
                     ctx.fillStyle = `rgba(224, 230, 240, ${p.opacity})`;
@@ -195,8 +213,8 @@
                 for (let p of particles) {
                     p.y += p.speed;
                     p.x += Math.sin(angle + p.drift) * p.drift;
-                    if (p.y > canvas.height + 10) {
-                        p.y = -10; p.x = Math.random() * canvas.width;
+                    if (p.y > snowCanvas.height + 10) {
+                        p.y = -10; p.x = Math.random() * snowCanvas.width;
                     }
                 }
             }
@@ -215,48 +233,44 @@
             ];
             
             function animateText() {
-                let charDelay = 0;
+                let wordDelay = 0;
                 messageText.forEach(line => {
                     const p = document.createElement('p');
-                    const words = line.split(' '); // শব্দে ভাগ করা হলো
+                    const words = line.split(' ');
                     words.forEach(word => {
                         const wordSpan = document.createElement('span');
                         wordSpan.className = 'word';
-                        const chars = word.split('');
-                        chars.forEach(char => {
-                            const charSpan = document.createElement('span');
-                            charSpan.className = 'char';
-                            charSpan.textContent = char;
-                            charSpan.style.setProperty('--delay', `${charDelay}s`);
-                            wordSpan.appendChild(charSpan);
-                            charDelay += 0.04; // প্রতিটি অক্ষরের মধ্যে খুব অল্প ব্যবধান
-                        });
+                        wordSpan.textContent = word + ' '; // স্পেস সহ শব্দ যোগ
+                        wordSpan.style.setProperty('--delay', `${wordDelay}s`);
                         p.appendChild(wordSpan);
+                        wordDelay += 0.2; // প্রতিটি শব্দের মধ্যে ব্যবধান
                     });
                     messageContainer.appendChild(p);
-                    charDelay += 0.4; // এক লাইনের পর বিরতি
+                    wordDelay += 0.5; // এক লাইনের পর বিরতি
                 });
             }
             
             startButton.addEventListener('click', () => {
-                backgroundSong.play().catch(e => {});
+                if(youtubePlayer && typeof youtubePlayer.playVideo === 'function') {
+                    youtubePlayer.playVideo();
+                }
                 
                 startPrompt.style.transform = 'scale(0)';
                 startPrompt.style.opacity = '0';
                 
                 bgContainer.classList.add('unblur');
-                getEl('snow-canvas').style.opacity = '1';
+                snowCanvas.style.opacity = '1';
                 
                 setTimeout(() => {
                     messageBox.classList.add('visible');
                     animateText();
-                }, 1000);
+                }, 1500); // सिनेमैटिक ট্রানজিশনের জন্য সময়
 
             }, { once: true });
             
             window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+                snowCanvas.width = window.innerWidth;
+                snowCanvas.height = window.innerHeight;
             });
         });
     </script>
