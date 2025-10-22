@@ -8,8 +8,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap');
 
         :root {
-            --font-main: 'Hind Siliguri', sans-serif;
-            --text-color: #f0f0f0;
+            --font-main: 'Hind+Siliguri', sans-serif;
+            --text-color: #e9e9f3;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,15 +38,16 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1612255097342-c01d1d8a3a9a?q=80&w=1974&auto=format&fit=crop');
+            /* একটি সুন্দর সাদা শীতের দিনের ছবি */
+            background-image: url('https://images.unsplash.com/photo-1549929013-3f1396b78ece?q=80&w=1975&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
-            filter: blur(15px) brightness(0.5);
-            transition: filter 2.5s cubic-bezier(0.25, 1, 0.5, 1);
-            transform: scale(1.1);
+            filter: blur(15px) brightness(0.6);
+            transition: filter 3s cubic-bezier(0.25, 1, 0.5, 1), transform 3s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: scale(1.15);
         }
         #background-image.unblur {
-            filter: blur(0) brightness(0.6);
+            filter: blur(0) brightness(0.8);
             transform: scale(1);
         }
 
@@ -75,19 +76,19 @@
             border: 2px solid;
             border-radius: 50px;
             background: rgba(0,0,0,0.2);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
             animation: color-cycle 10s infinite linear, breathe 3s infinite ease-in-out;
             letter-spacing: 2px;
         }
         @keyframes color-cycle {
-            0%   { border-color: #ffadad; text-shadow: 0 0 10px #ffadad; }
-            15%  { border-color: #ffd6a5; text-shadow: 0 0 10px #ffd6a5; }
-            30%  { border-color: #fdffb6; text-shadow: 0 0 10px #fdffb6; }
-            45%  { border-color: #caffbf; text-shadow: 0 0 10px #caffbf; }
-            60%  { border-color: #9bf6ff; text-shadow: 0 0 10px #9bf6ff; }
-            75%  { border-color: #a0c4ff; text-shadow: 0 0 10px #a0c4ff; }
-            90%  { border-color: #bdb2ff; text-shadow: 0 0 10px #bdb2ff; }
-            100% { border-color: #ffadad; text-shadow: 0 0 10px #ffadad; }
+            0%   { border-color: #ffadad; text-shadow: 0 0 12px #ffadad; }
+            15%  { border-color: #ffd6a5; text-shadow: 0 0 12px #ffd6a5; }
+            30%  { border-color: #fdffb6; text-shadow: 0 0 12px #fdffb6; }
+            45%  { border-color: #caffbf; text-shadow: 0 0 12px #caffbf; }
+            60%  { border-color: #9bf6ff; text-shadow: 0 0 12px #9bf6ff; }
+            75%  { border-color: #a0c4ff; text-shadow: 0 0 12px #a0c4ff; }
+            90%  { border-color: #bdb2ff; text-shadow: 0 0 12px #bdb2ff; }
+            100% { border-color: #ffadad; text-shadow: 0 0 12px #ffadad; }
         }
         @keyframes breathe {
             0%, 100% { transform: scale(1); }
@@ -99,39 +100,41 @@
             position: relative;
             z-index: 8;
             width: 90%;
-            max-width: 750px;
-            padding: 30px 40px;
-            background: rgba(10, 10, 20, 0.5);
+            max-width: 800px;
+            padding: 40px;
+            /* সাদা ফ্রস্টেড গ্লাস ইফেক্ট */
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px) saturate(180%);
             -webkit-backdrop-filter: blur(15px) saturate(180%);
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             opacity: 0;
-            transform: translateY(30px);
+            transform: scale(0.95) translateY(30px);
             transition: opacity 2s ease-out, transform 2s ease-out;
             pointer-events: none;
         }
         #message-box.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1) translateY(0);
             pointer-events: auto;
         }
         
         #message-container p {
             font-family: var(--font-main);
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             color: var(--text-color);
             line-height: 2.2;
-            text-shadow: 0 0 8px rgba(0,0,0,0.5);
-            margin-bottom: 10px;
-            min-height: 50px;
+            text-shadow: 0 1px 15px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+            min-height: 55px;
+            text-align: center; /* লেখা মাঝখানে আনার জন্য */
         }
 
         .cursor {
             display: inline-block;
             width: 4px;
-            height: 2rem;
+            height: 2.1rem;
             background-color: #fff;
             animation: blink 0.8s infinite;
             margin-left: 5px;
@@ -141,12 +144,12 @@
 
         @media (max-width: 600px) {
             #start-button { font-size: 1.5rem; padding: 15px 30px; }
-            #message-container p { font-size: 1.3rem; line-height: 1.8; min-height: 35px; }
+            #message-container p { font-size: 1.4rem; line-height: 1.9; min-height: 40px; }
+            #message-box { padding: 30px 20px; }
         }
     </style>
 </head>
 <body>
-    <!-- আপনার দেওয়া TikTok এর অডিও লিঙ্ক -->
     <audio id="background-song" loop>
         <source src="https://sf16-ies-music-va.tiktokcdn.com/obj/ies-music-aiso/6954277717646510850.mp3" type="audio/mpeg">
     </audio>
@@ -177,18 +180,19 @@
             const canvas = getEl('snow-canvas');
             const ctx = canvas.getContext('2d');
             
-            // উন্নত তুষার পড়ার অ্যানিমেশন
+            // অনেক বেশি ঘন তুষার পড়ার অ্যানিমেশন
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             let particles = [];
-            for (let i = 0; i < 250; i++) {
+            // কণার সংখ্যা অনেক বাড়ানো হলো
+            for (let i = 0; i < 500; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    radius: Math.random() * 3.5 + 1,
-                    speed: Math.random() * 1 + 0.5,
-                    opacity: Math.random() * 0.5 + 0.3,
-                    drift: Math.random() * 2 - 1
+                    radius: Math.random() * 4 + 1, // আকার বাড়ানো হলো
+                    speed: Math.random() * 1.5 + 0.8, // গতি বাড়ানো হলো
+                    opacity: Math.random() * 0.6 + 0.4,
+                    drift: Math.random() * 2.5 - 1.25
                 });
             }
             function drawSnow() {
@@ -209,14 +213,14 @@
                 for (let i = 0; i < particles.length; i++) {
                     const p = particles[i];
                     p.y += p.speed;
-                    p.x += Math.sin(angle + p.drift) * 0.8;
-                    if (p.y > canvas.height) {
+                    p.x += Math.sin(angle + p.drift) * p.drift;
+                    if (p.y > canvas.height + 10) {
                         p.y = -10;
                         p.x = Math.random() * canvas.width;
                     }
                 }
             }
-            let snowInterval = requestAnimationFrame(function animateSnow(){
+            requestAnimationFrame(function animateSnow(){
                 drawSnow();
                 requestAnimationFrame(animateSnow);
             });
@@ -236,9 +240,8 @@
                     const p = document.createElement('p');
                     messageContainer.appendChild(p);
                     await typeLine(p, messageText[i]);
-                    // শেষ লাইনের পর আর অপেক্ষা করবে না
                     if (i < messageText.length - 1) {
-                         await new Promise(resolve => setTimeout(resolve, 600)); // এক লাইন শেষ হওয়ার পর বিরতি
+                         await new Promise(resolve => setTimeout(resolve, 500));
                     }
                 }
             }
@@ -259,7 +262,7 @@
                             element.removeChild(cursor);
                             resolve();
                         }
-                    }, 100); // প্রতিটি অক্ষর টাইপ হওয়ার গতি
+                    }, 100);
                 });
             }
             
@@ -274,7 +277,7 @@
                 setTimeout(() => {
                     messageBox.classList.add('visible');
                     typeWriter();
-                }, 1500); // ব্যাকগ্রাউন্ড স্পষ্ট হওয়ার পর মেসেজ আসবে
+                }, 2000); // ব্যাকগ্রাউন্ডের সাথে সময় মিলিয়ে
 
             }, { once: true });
             
