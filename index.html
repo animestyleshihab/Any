@@ -9,7 +9,8 @@
 
         :root {
             --font-main: 'Hind Siliguri', sans-serif;
-            --text-color: #333; /* উজ্জ্বল ব্যাকগ্রাউন্ডের জন্য ডার্ক টেক্সট */
+            --text-color: #e0e6f0;
+            --glow-color: #a0c4ff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -18,7 +19,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #eef2f9;
+            background: #060814;
         }
 
         #page-wrapper {
@@ -32,22 +33,21 @@
         }
 
         /* --- ব্যাকগ্রাউন্ড এবং তুষার --- */
-        #background-image {
+        #background-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            /* একটি সুন্দর সাদা শীতের দিনের ছবি */
-            background-image: url('https://images.unsplash.com/photo-1516733834212-7dc7a22a3a2f?q=80&w=1974&auto=format&fit=crop');
+            background-image: url('https://images.unsplash.com/photo-1545041552-be45885239b6?q=80&w=1974&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
-            filter: blur(12px) brightness(0.8);
-            transition: filter 3s cubic-bezier(0.25, 1, 0.5, 1), transform 3s cubic-bezier(0.25, 1, 0.5, 1);
-            transform: scale(1.15);
+            filter: blur(10px) brightness(0.4);
+            transition: filter 4s cubic-bezier(0.25, 1, 0.5, 1), transform 4s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: scale(1.1);
         }
-        #background-image.unblur {
-            filter: blur(0) brightness(1);
+        #background-container.unblur {
+            filter: blur(2px) brightness(0.6);
             transform: scale(1);
         }
 
@@ -59,6 +59,8 @@
             height: 100%;
             pointer-events: none;
             z-index: 5;
+            opacity: 0;
+            transition: opacity 3s ease-in;
         }
 
         /* --- স্টার্ট বাটন --- */
@@ -68,28 +70,15 @@
             transition: opacity 1.5s ease-out, transform 1.5s ease-out;
         }
         #start-button {
-            font-family: var(--font-main);
-            font-size: 2rem;
-            font-weight: 600;
-            color: white;
-            padding: 18px 40px;
-            border: 2px solid;
-            border-radius: 50px;
-            background: rgba(0,0,0,0.25);
-            backdrop-filter: blur(8px);
-            animation: color-cycle 10s infinite linear, breathe 3s infinite ease-in-out;
-            letter-spacing: 2px;
+            font-size: 4rem;
+            background: none;
+            border: none;
+            animation: heart-breathe 3s infinite ease-in-out;
+            text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
         }
-        @keyframes color-cycle {
-            0%   { border-color: #ffadad; text-shadow: 0 0 12px #ffadad; }
-            25%  { border-color: #caffbf; text-shadow: 0 0 12px #caffbf; }
-            50%  { border-color: #9bf6ff; text-shadow: 0 0 12px #9bf6ff; }
-            75%  { border-color: #bdb2ff; text-shadow: 0 0 12px #bdb2ff; }
-            100% { border-color: #ffadad; text-shadow: 0 0 12px #ffadad; }
-        }
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+        @keyframes heart-breathe {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; }
         }
 
         /* --- মেসেজ বক্স --- */
@@ -99,63 +88,61 @@
             width: 90%;
             max-width: 800px;
             padding: 40px;
-            /* সাদা ফ্রস্টেড গ্লাস ইফেক্ট */
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(15px) saturate(180%);
-            -webkit-backdrop-filter: blur(15px) saturate(180%);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            background: transparent;
             opacity: 0;
-            transform: scale(0.95) translateY(30px);
-            transition: opacity 2s ease-out, transform 2s ease-out;
+            transform: translateY(20px);
+            transition: opacity 2s 1s ease-out, transform 2s 1s ease-out;
             pointer-events: none;
         }
         #message-box.visible {
             opacity: 1;
-            transform: scale(1) translateY(0);
+            transform: translateY(0);
             pointer-events: auto;
         }
         
         #message-container p {
             font-family: var(--font-main);
-            font-size: 1.9rem;
+            font-size: 2.1rem;
             font-weight: 600;
             color: var(--text-color);
-            line-height: 2.3;
-            text-shadow: 0 1px 5px rgba(255, 255, 255, 0.7);
-            margin-bottom: 20px;
+            line-height: 2.5;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+            margin-bottom: 25px;
             text-align: center; /* লেখা মাঝখানে আনার জন্য */
         }
         
         /* পেশাদার টেক্সট অ্যানিমেশন */
+        .word {
+            display: inline-block;
+            white-space: pre; /* ইমোজি ও অক্ষরের মধ্যে স্পেস ঠিক রাখার জন্য */
+        }
         .char {
             display: inline-block;
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: translateY(25px) scale(1.1) rotate(5deg);
+            filter: blur(5px);
+            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.8s cubic-bezier(0.25, 1, 0.5, 1);
             transition-delay: var(--delay);
         }
 
         @media (max-width: 600px) {
-            #start-button { font-size: 1.5rem; padding: 15px 30px; }
-            #message-container p { font-size: 1.4rem; line-height: 1.9; }
-            #message-box { padding: 30px 20px; }
+            #start-button { font-size: 3rem; }
+            #message-container p { font-size: 1.6rem; line-height: 2; }
         }
     </style>
 </head>
 <body>
-    <!-- একটি সুন্দর শীতের পিয়ানো মিউজিক -->
+    <!-- একটি সুন্দর এবং আবেগঘন শীতের মিউজিক -->
     <audio id="background-song" loop>
-        <source src="https://www.chosic.com/wp-content/uploads/2021/12/When-I-Look-At-The-Stars.mp3" type="audio/mpeg">
+        <source src="https://www.chosic.com/wp-content/uploads/2022/01/forgotten-in-time.mp3" type="audio/mpeg">
     </audio>
     
     <div id="page-wrapper">
-        <div id="background-image"></div>
+        <div id="background-container"></div>
         <canvas id="snow-canvas"></canvas>
 
         <div id="start-prompt">
-            <button id="start-button">Winter U</button>
+            <button id="start-button">❤️‍🩹</button>
         </div>
 
         <div id="message-box">
@@ -169,7 +156,7 @@
 
             const startPrompt = getEl('start-prompt');
             const startButton = getEl('start-button');
-            const bgImage = getEl('background-image');
+            const bgContainer = getEl('background-container');
             const messageBox = getEl('message-box');
             const messageContainer = getEl('message-container');
             const backgroundSong = getEl('background-song');
@@ -180,23 +167,22 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             let particles = [];
-            const particleCount = Math.min(600, window.innerWidth / 2); // ডিভাইসের আকার অনুযায়ী কণার সংখ্যা
+            const particleCount = Math.min(400, window.innerWidth / 2.5);
             for (let i = 0; i < particleCount; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    radius: Math.random() * 4 + 1,
-                    speed: Math.random() * 1.5 + 0.8,
+                    radius: Math.random() * 3.5 + 1,
+                    speed: Math.random() * 1.2 + 0.6,
                     opacity: Math.random() * 0.7 + 0.3,
-                    drift: Math.random() * 2.5 - 1.25
+                    drift: Math.random() * 2 - 1
                 });
             }
             function drawSnow() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < particles.length; i++) {
-                    const p = particles[i];
+                for (let p of particles) {
                     ctx.beginPath();
-                    ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                    ctx.fillStyle = `rgba(224, 230, 240, ${p.opacity})`;
                     ctx.moveTo(p.x, p.y);
                     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2, true);
                     ctx.fill();
@@ -205,9 +191,8 @@
             }
             let angle = 0;
             function updateSnow() {
-                angle += 0.005;
-                for (let i = 0; i < particles.length; i++) {
-                    const p = particles[i];
+                angle += 0.003;
+                for (let p of particles) {
                     p.y += p.speed;
                     p.x += Math.sin(angle + p.drift) * p.drift;
                     if (p.y > canvas.height + 10) {
@@ -230,34 +215,42 @@
             ];
             
             function animateText() {
-                let totalDelay = 0;
+                let charDelay = 0;
                 messageText.forEach(line => {
                     const p = document.createElement('p');
-                    const chars = line.split('');
-                    chars.forEach((char, index) => {
-                        const span = document.createElement('span');
-                        span.className = 'char';
-                        span.textContent = char === ' ' ? '\u00A0' : char; // স্পেস ঠিক রাখার জন্য
-                        span.style.setProperty('--delay', `${totalDelay + index * 0.05}s`);
-                        p.appendChild(span);
+                    const words = line.split(' '); // শব্দে ভাগ করা হলো
+                    words.forEach(word => {
+                        const wordSpan = document.createElement('span');
+                        wordSpan.className = 'word';
+                        const chars = word.split('');
+                        chars.forEach(char => {
+                            const charSpan = document.createElement('span');
+                            charSpan.className = 'char';
+                            charSpan.textContent = char;
+                            charSpan.style.setProperty('--delay', `${charDelay}s`);
+                            wordSpan.appendChild(charSpan);
+                            charDelay += 0.04; // প্রতিটি অক্ষরের মধ্যে খুব অল্প ব্যবধান
+                        });
+                        p.appendChild(wordSpan);
                     });
                     messageContainer.appendChild(p);
-                    totalDelay += chars.length * 0.05 + 0.5; // এক লাইনের পর বিরতি
+                    charDelay += 0.4; // এক লাইনের পর বিরতি
                 });
             }
             
             startButton.addEventListener('click', () => {
-                backgroundSong.play().catch(e => console.error("Audio play failed:", e));
+                backgroundSong.play().catch(e => {});
                 
                 startPrompt.style.transform = 'scale(0)';
                 startPrompt.style.opacity = '0';
                 
-                bgImage.classList.add('unblur');
+                bgContainer.classList.add('unblur');
+                getEl('snow-canvas').style.opacity = '1';
                 
                 setTimeout(() => {
                     messageBox.classList.add('visible');
                     animateText();
-                }, 1500);
+                }, 1000);
 
             }, { once: true });
             
