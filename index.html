@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>তোমাকে পাওয়া বাকি... ❤️‍🩹</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap');
+
+        :root {
+            --font-main: 'Hind Siliguri', sans-serif;
+            --text-color: #e0e0e0;
+            --highlight-color: #ffadb9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #page-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* --- ব্যাকগ্রাউন্ড এবং তুষার --- */
+        #background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1547091276-5604c569c7b9?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: blur(10px) brightness(0.6);
+            transition: filter 2s ease-in-out;
+            transform: scale(1.1); /* হালকা জুম করা থাকবে */
+        }
+        #background-image.unblur {
+            filter: blur(0) brightness(0.5);
+        }
+
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* --- স্টার্ট বাটন --- */
+        #start-prompt {
+            z-index: 10;
+            cursor: pointer;
+            transition: opacity 1s ease-out;
+        }
+        #start-prompt h1 {
+            font-family: var(--font-main);
+            font-size: 2rem;
+            color: white;
+            padding: 15px 30px;
+            border: 2px solid white;
+            border-radius: 50px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            animation: pulse 2.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0); }
+        }
+
+        /* --- মেসেজ বক্স --- */
+        #message-box {
+            position: relative;
+            z-index: 8;
+            width: 90%;
+            max-width: 700px;
+            padding: 30px;
+            background: rgba(10, 10, 20, 0.4);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+            pointer-events: none;
+        }
+        #message-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        #message-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #message-container p {
+            font-family: var(--font-main);
+            font-size: 1.6rem;
+            color: var(--text-color);
+            line-height: 2;
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            transition-delay: var(--delay);
+        }
+        #message-container p.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ইউটিউব প্লেয়ার আড়াল করার জন্য */
+        #youtube-player {
+            position: absolute; top: -9999px; left: -9999px;
+            width: 0; height: 0;
+        }
+
+        /* --- স্ক্রলবার স্টাইল --- */
+        #message-container::-webkit-scrollbar { width: 5px; }
+        #message-container::-webkit-scrollbar-track { background: transparent; }
+        #message-container::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.3); border-radius: 20px; }
+
+        @media (max-width: 600px) {
+            #start-prompt h1 { font-size: 1.5rem; }
+            #message-container p { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="page-wrapper">
+        <div id="background-image"></div>
+        <canvas id="snow-canvas"></canvas>
+        <div id="youtube-player"></div>
+
+        <div id="start-prompt">
+            <h1>শুরু করতে স্পর্শ করুন</h1>
+        </div>
+
+        <div id="message-box">
+            <div id="message-container"></div>
+        </div>
+    </div>
+
+    <!-- YouTube Iframe API Script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const getEl = (id) => document.getElementById(id);
+
+            const startPrompt = getEl('start-prompt');
+            const bgImage = getEl('background-image');
+            const messageBox = getEl('message-box');
+            const messageContainer = getEl('message-container');
+            const canvas = getEl('snow-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let youtubePlayer;
+            // এই ভিডিও আইডিটি আপনার দেওয়া ভিডিওর অরিজিনাল সাউন্ডের সাথে মিলে যায়
+            const videoId = '5JGl_s_0sA0'; 
+
+            window.onYouTubeIframeAPIReady = function() {
+                youtubePlayer = new YT.Player('youtube-player', {
+                    videoId: videoId,
+                    playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': videoId },
+                    events: { 'onReady': (event) => event.target.setVolume(70) }
+                });
+            }
+
+            // তুষার পড়ার অ্যানিমেশন
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            let particles = [];
+            for (let i = 0; i < 200; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 3 + 1,
+                    density: Math.random() * 2 + 1
+                });
+            }
+            function drawSnow() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+                ctx.beginPath();
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    ctx.moveTo(p.x, p.y);
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2, true);
+                }
+                ctx.fill();
+                updateSnow();
+            }
+            function updateSnow() {
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.y += p.density;
+                    p.x += Math.sin(p.y / 50) * 0.5; // হালকা দোল খাওয়ার ইফেক্ট
+                    if (p.y > canvas.height) {
+                        p.y = -10;
+                        p.x = Math.random() * canvas.width;
+                    }
+                }
+            }
+            setInterval(drawSnow, 30);
+            
+            const messageText = `তোমাকে নিয়ে আমার শীত উপভোগ করা বাকি,,
+                                তোমাকে নিয়ে ব্যাডমিন্টন খেলা বাকি,
+                                ভোরের কুয়াশা উপভোগ করা বাকি
+                                খেজুরের রস খাওয়া, শীতের সন্ধ্যায় চা
+                                খাওয়া এবং তোমার হাতে হাত রেখে 
+                                শীতের বিকেলে হাঁটা বাকি, তোমাকে 
+                                পাওয়া বাকি ,, 😊❤️‍🩹`;
+
+            function showMessage() {
+                const lines = messageText.trim().split('\n');
+                let delay = 0;
+                lines.forEach(line => {
+                    const p = document.createElement('p');
+                    p.textContent = line.trim();
+                    p.style.setProperty('--delay', `${delay}s`);
+                    messageContainer.appendChild(p);
+                    // Add the 'show' class after a short delay to trigger the animation
+                    setTimeout(() => {
+                        p.classList.add('show');
+                    }, delay * 1000 + 100);
+                    delay += 0.5; // প্রতিটি লাইনের মধ্যে অ্যানিমেশনের ব্যবধান
+                });
+            }
+            
+            startPrompt.addEventListener('click', () => {
+                // গান শুরু করা
+                if (youtubePlayer && typeof youtubePlayer.playVideo === 'function') {
+                    youtubePlayer.playVideo();
+                }
+                
+                // স্টার্ট বাটন আড়াল করা
+                startPrompt.style.opacity = '0';
+                startPrompt.style.pointerEvents = 'none';
+                
+                // ব্যাকগ্রাউন্ড স্পষ্ট করা
+                bgImage.classList.add('unblur');
+                
+                // মেসেজ বক্স দেখানো
+                setTimeout(() => {
+                    messageBox.classList.add('visible');
+                    showMessage();
+                }, 1000); // ব্যাকগ্রাউন্ড স্পষ্ট হওয়ার পর মেসেজ আসবে
+
+            }, { once: true });
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        });
+    </script>
+</body>
+</html>
